@@ -5,7 +5,7 @@ const systemMessageField = document.querySelector("#field-system-message");
 const systemMsgP = document.querySelector("#system-message");
 
 const defaultSettings = {
-    "system-message": "You are a helpful assistant",
+    "system-message": "I am a helpful assistant",
     "model": null,
 }
 
