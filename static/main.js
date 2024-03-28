@@ -9,6 +9,7 @@ const messagesEl = document.getElementById("messages");
 const input = document.querySelector("form input");
 const form = document.querySelector("form");
 const button = document.querySelector("form button");
+const settingsButton = document.querySelector("#settings-button");
 const stopButton = document.querySelector("#stop-button");
 const scrollable = document.querySelector("#scrollable");
 
@@ -61,3 +62,5 @@ input.addEventListener("input", () => {
     if(!input.value)button.disabled = true;
     else if(!running)button.disabled = false;
 })
+
+settingsButton.addEventListener("click", ()=> document.querySelector('dialog').showModal());
