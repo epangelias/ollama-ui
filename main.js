@@ -10,6 +10,7 @@ const input = document.querySelector("form input");
 const form = document.querySelector("form");
 const button = document.querySelector("form button");
 const stopButton = document.querySelector("#stop-button");
+const scrollable = document.querySelector("#scrollable");
 
 let lastMsgEl;
 let running = false;
@@ -39,6 +40,7 @@ async function submitQuestion(question) {
 
 
 form.addEventListener("submit", async e => {
+    scrollable.scrollTo(0, document.body.scrollHeight);
     e.preventDefault();
     button.disabled = true;
     stopButton.disabled = false;
@@ -52,6 +54,7 @@ form.addEventListener("submit", async e => {
 stopButton.addEventListener("click", e => {
     running = false;
     stopButton.disabled = true;
+    input.focus();
 })
 
 input.addEventListener("input", () => {
