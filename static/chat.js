@@ -45,7 +45,10 @@ async function readStream(res, updater, controller) {
       const word = json.message.content;
       text += word;
       const keepRunning = updater(text, word);
-      if (!keepRunning) return controller.abort();
+      if (!keepRunning) {
+        controller.abort();
+        return text;
+      }
     } catch (e) {
       break;
     }

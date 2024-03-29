@@ -1,10 +1,6 @@
 import Chat from "./chat.js";
 import { getSetting } from "./settings.js";
 
-export const messages = [
-  { role: "system", content: getSetting("system-message") },
-];
-
 const messagesEl = document.getElementById("messages");
 const input = document.querySelector("form input");
 const form = document.querySelector("form");
@@ -17,15 +13,44 @@ const scrollable = document.querySelector("#scrollable");
 let lastMsgEl;
 let running = false;
 
+export const messages = [
+  { role: "system", content: getSetting("system-message") },
+  ...loadMessages(),
+];
+
+function saveMessages() {
+  localStorage.setItem("messages", JSON.stringify(messages.slice(1)));
+}
+
+function loadMessages() {
+  const res = localStorage.getItem("messages");
+  if (!res) return [];
+  const messages = JSON.parse(res) || [];
+  let curUser = true;
+  messages.forEach((msg, ID) => {
+    const msgUser = msg.role == "user";
+    if (msgUser != curUser) {
+      showMsg("");
+      curUser = !curUser;
+    }
+    showMsg(msg.content || " ", ID + 1);
+    console.log(curUser, msgUser, msg);
+    curUser = !curUser;
+  });
+  if (!curUser) showMsg("");
+  return messages;
+}
+
 function showMsg(content, messageId, noEdit = false) {
   const li = document.createElement("li");
-  li.innerHTML = content.replaceAll("\n", "<br/>");
+  li.innerHTML = content?.replaceAll("\n", "<br/>");
   li.contentEditable = true;
-  li.addEventListener(
-    "input",
-    () => (messages[messageId].content = li.textContent)
-  );
-  if (!content) {
+  if (content) {
+    li.addEventListener("input", () => {
+      messages[messageId].content = li.textContent;
+      saveMessages();
+    });
+  } else {
     li.classList.add("hide");
     li.style.display = "none";
   }
@@ -44,10 +69,12 @@ async function submitQuestion(question) {
     input.value = "";
     messages.push({ role: "user", content: question });
   }
+  saveMessages();
   showMsg(question, messages.length - 1);
   showMsg("<img src='/loading.svg' height='20'/>", messages.length, true);
   const content = await Chat(messages, updater);
   messages.push({ role: "assistant", content });
+  saveMessages();
 }
 
 form.addEventListener("submit", async (e) => {
@@ -60,7 +87,7 @@ form.addEventListener("submit", async (e) => {
   await submitQuestion(input.value);
   lastMsgEl.contentEditable = true;
   button.disabled = false;
-  deleteButton.disabled = false;
+  if (messages.length > 1) deleteButton.disabled = false;
   stopButton.disabled = true;
   running = false;
 });
@@ -76,16 +103,19 @@ settingsButton.addEventListener("click", () =>
 );
 
 deleteButton.addEventListener("click", () => {
+  if (messages.length <= 1) return (deleteButton.disabled = true);
   messages.splice(-1, 1);
   const els = document.querySelectorAll("#messages li:not(.hide)");
   const el = els[els.length - 1];
   if (!el) return;
   el.style.display = "none";
   el.classList.add("hide");
+  saveMessages();
 });
 
+deleteButton.disabled = messages.length <= 1;
+
 const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
-console.log(navigator.userAgent.toLowerCase());
 
 if (!isFirefox) {
   const d = confirm(
