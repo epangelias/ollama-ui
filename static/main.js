@@ -9,11 +9,12 @@ const settingsButton = document.querySelector("#settings-button");
 const stopButton = document.querySelector("#stop-button");
 const deleteButton = document.querySelector("#delete-button");
 const scrollable = document.querySelector("#scrollable");
+const clearChatButton = document.querySelector("#clear-chat-button");
 
 let lastMsgEl;
 let running = false;
 
-export const messages = [
+export let messages = [
   { role: "system", content: getSetting("system-message") },
   ...loadMessages(),
 ];
@@ -45,6 +46,7 @@ function showMsg(content, messageId, noEdit = false) {
   const li = document.createElement("li");
   li.innerHTML = content?.replaceAll("\n", "<br/>");
   li.contentEditable = true;
+  li.spellcheck = false;
   if (content) {
     li.addEventListener("input", () => {
       messages[messageId].content = li.textContent;
@@ -71,7 +73,11 @@ async function submitQuestion(question) {
   }
   saveMessages();
   showMsg(question, messages.length - 1);
-  showMsg("<img src='/loading.svg' height='20'/>", messages.length, true);
+  showMsg(
+    "<img src='/loading.svg' height='20' alt='Loading...' />",
+    messages.length,
+    true
+  );
   const content = await Chat(messages, updater);
   messages.push({ role: "assistant", content });
   saveMessages();
@@ -123,3 +129,9 @@ if (!isFirefox) {
   );
   if (d) window.location.href = "https://www.mozilla.org/en-US/firefox/new/";
 }
+
+clearChatButton.addEventListener("click", () => {
+  document.querySelectorAll("#messages li").forEach((li) => li.remove());
+  messages = [messages[0]];
+  saveMessages();
+});

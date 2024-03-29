@@ -31,6 +31,7 @@ export default function Home() {
           <label for="field-system-message">System Message</label>
           <textarea id="field-system-message" style="width:100%" rows={3}>
           </textarea>
+          <button id="clear-chat-button" type="button">Clear Chat</button>
         </div>
         <form method="dialog" style="float: right">
           <button>Close</button>
