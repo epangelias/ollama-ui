@@ -17,9 +17,9 @@ const scrollable = document.querySelector("#scrollable");
 let lastMsgEl;
 let running = false;
 
-function showMsg(content, messageId) {
+function showMsg(content, messageId, noEdit = false) {
   const li = document.createElement("li");
-  li.innerHTML = content;
+  li.innerHTML = content.replaceAll("\n", "<br/>");
   li.contentEditable = true;
   li.addEventListener(
     "input",
@@ -29,12 +29,13 @@ function showMsg(content, messageId) {
     li.classList.add("hide");
     li.style.display = "none";
   }
+  if (noEdit) li.contentEditable = false;
   messagesEl.appendChild(li);
   lastMsgEl = li;
 }
 
 function updater(text) {
-  lastMsgEl.textContent = text;
+  lastMsgEl.innerHTML = text.replaceAll("\n", "<br/>");
   return running;
 }
 
@@ -44,19 +45,20 @@ async function submitQuestion(question) {
     messages.push({ role: "user", content: question });
   }
   showMsg(question, messages.length - 1);
-  showMsg("<img src='/loading.svg' height='20'/>", messages.length);
+  showMsg("<img src='/loading.svg' height='20'/>", messages.length, true);
   const content = await Chat(messages, updater);
   messages.push({ role: "assistant", content });
 }
 
 form.addEventListener("submit", async (e) => {
-  scrollable.scrollTo(0, document.body.scrollHeight);
+  scrollable.scrollTo(0, scrollable.scrollHeight + 1000);
   e.preventDefault();
   button.disabled = true;
   deleteButton.disabled = true;
   stopButton.disabled = false;
   running = true;
   await submitQuestion(input.value);
+  lastMsgEl.contentEditable = true;
   button.disabled = false;
   deleteButton.disabled = false;
   stopButton.disabled = true;
