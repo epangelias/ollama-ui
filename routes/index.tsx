@@ -11,7 +11,7 @@ export default function Home() {
         <form>
           <div>
             <input type="text" autofocus autocomplete="off"></input>
-            <button disabled>Send</button>
+            <button>Send</button>
             <button id="stop-button" type="button" disabled>🛑</button>
             <button id="delete-button" type="button">🗑️</button>
             <button id="settings-button" type="button">⚙️</button>

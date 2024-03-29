@@ -25,6 +25,10 @@ function showMsg(content, messageId) {
     "input",
     () => (messages[messageId].content = li.textContent)
   );
+  if (!content) {
+    li.classList.add("hide");
+    li.style.display = "none";
+  }
   messagesEl.appendChild(li);
   lastMsgEl = li;
 }
@@ -35,8 +39,10 @@ function updater(text) {
 }
 
 async function submitQuestion(question) {
-  input.value = "";
-  messages.push({ role: "user", content: question });
+  if (question) {
+    input.value = "";
+    messages.push({ role: "user", content: question });
+  }
   showMsg(question, messages.length - 1);
   showMsg("<img src='/loading.svg' height='20'/>", messages.length);
   const content = await Chat(messages, updater);
@@ -51,7 +57,7 @@ form.addEventListener("submit", async (e) => {
   stopButton.disabled = false;
   running = true;
   await submitQuestion(input.value);
-  if (input.value) button.disabled = false;
+  button.disabled = false;
   deleteButton.disabled = false;
   stopButton.disabled = true;
   running = false;
@@ -61,11 +67,6 @@ stopButton.addEventListener("click", (e) => {
   running = false;
   stopButton.disabled = true;
   input.focus();
-});
-
-input.addEventListener("input", () => {
-  if (!input.value) button.disabled = true;
-  else if (!running) button.disabled = false;
 });
 
 settingsButton.addEventListener("click", () =>
