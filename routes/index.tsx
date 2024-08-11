@@ -31,6 +31,13 @@ export default function Home() {
           <label for="field-system-message">System Message</label>
           <textarea id="field-system-message" style="width:100%" rows={3}>
           </textarea>
+          {
+            /* <div>
+            <label htmlFor="field-json">
+              <input type="checkbox" id="field-json" />JSON Response
+            </label>
+          </div> */
+          }
           <button id="clear-chat-button" type="button">Clear Chat</button>
         </div>
         <form method="dialog" style="float: right">

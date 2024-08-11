@@ -14,6 +14,26 @@ const clearChatButton = document.querySelector("#clear-chat-button");
 let lastMsgEl;
 let running = false;
 
+function formatJSON(text, lightMode = false) {
+  try {
+    const { message, action } = JSON.parse(text);
+    if (action == "on") {
+      fetch("http://127.0.0.1:5900/on");
+    }
+    if (action == "off") {
+      fetch("http://127.0.0.1:5900/off");
+    }
+    if (action == "flash") {
+      fetch("http://127.0.0.1:5900/flicker");
+    }
+    return `${message} ${
+      action && action !== "none" ? `<br/><code>ACTION ${action}</code>` : ""
+    }`;
+  } catch (e) {
+    return text;
+  }
+}
+
 export let messages = [
   { role: "system", content: getSetting("system-message") },
   ...loadMessages(),
@@ -34,8 +54,7 @@ function loadMessages() {
       showMsg("");
       curUser = !curUser;
     }
-    showMsg(msg.content || " ", ID + 1);
-    console.log(curUser, msgUser, msg);
+    showMsg(formatJSON(msg.content) || " ", ID + 1);
     curUser = !curUser;
   });
   if (!curUser) showMsg("");
@@ -44,7 +63,7 @@ function loadMessages() {
 
 function showMsg(content, messageId, noEdit = false) {
   const li = document.createElement("li");
-  li.innerHTML = content?.replaceAll("\n", "<br/>");
+  li.innerHTML = formatJSON(content)?.replaceAll("\n", "<br/>");
   li.contentEditable = true;
   li.spellcheck = false;
   if (content) {
@@ -62,7 +81,7 @@ function showMsg(content, messageId, noEdit = false) {
 }
 
 function updater(text) {
-  lastMsgEl.innerHTML = text.replaceAll("\n", "<br/>");
+  lastMsgEl.innerHTML = formatJSON(text, true).replaceAll("\n", "<br/>");
   return running;
 }
 

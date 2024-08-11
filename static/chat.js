@@ -9,13 +9,15 @@ export default async function Chat(messages, updater) {
     model: getSetting("model"),
     messages: messages,
     stream: true,
-    // format: "json",
     options: {
       seed: Math.floor(Math.random() * 10000),
       // stop: ["\n"],
     },
+    // format: "json",
     keep_alive: "3m",
   };
+
+  // if (getSetting("json")) data.format = "json";
 
   const controller = new AbortController();
 

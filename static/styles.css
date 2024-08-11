@@ -116,7 +116,7 @@ main {
       margin-left: .5rem;
     }
 
-    input {
+    input:not([type="checkbox"]) {
       width: 100%;
     }
   }
